@@ -6,13 +6,15 @@ import { generateSvgSvelteComponent } from '../utils/generateSvgSvelteComponent.
 export interface Config {
 	root: string;
 }
+type ViteTransformOptions = { ssr?: boolean | undefined } | undefined;
 
 export const svelteSvgImportVite = () => {
 	return {
 		name: 'vite-plugin-svelte-svg-import',
 		enforce: 'pre' as const,
-		async transform(_src: string, id: string, options: { ssr: boolean }) {
+		async transform(_src: string, id: string, options: ViteTransformOptions) {
 			if (!id.endsWith('.svg?svelte')) return;
+
 			const cleanedId = id.replace('?svelte', '');
 			const svg = await fs.readFile(cleanedId, { encoding: 'utf8' });
 			const { data } = optimize(svg, {
