@@ -24,7 +24,7 @@ export const svelteSvgImportVite = () => {
 			hash.write(svg);
 			const hashedContent = hash.digest('hex');
 			const cachedContent = cache.get(hashedContent);
-			if (cachedContent) return cachedContent;
+			if (cachedContent) return { code: cachedContent };
 
 			const { data } = optimize(svg, {
 				path: cleanedId,
@@ -47,8 +47,8 @@ export const svelteSvgImportVite = () => {
 				namespace: 'svg',
 				generate: options.ssr ? 'server' : 'client',
 			});
-			cache.set(hashedContent, js);
-			return js;
+			cache.set(hashedContent, js.code);
+			return { code: js.code };
 		},
 	};
 };
