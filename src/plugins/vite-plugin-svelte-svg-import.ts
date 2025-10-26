@@ -9,9 +9,9 @@ export interface Config {
 }
 type ViteTransformOptions = { ssr?: boolean | undefined } | undefined;
 
-const cache = new Map();
-
 export const svelteSvgImportVite = () => {
+	const cache = new Map();
+
 	return {
 		name: 'vite-plugin-svelte-svg-import',
 		enforce: 'pre' as const,
@@ -20,10 +20,13 @@ export const svelteSvgImportVite = () => {
 
 			const cleanedId = id.replace('?svelte', '');
 			const svg = await fs.readFile(cleanedId, { encoding: 'utf8' });
-			const hash = crypto.createHash('sha256');
-			hash.write(svg);
-			const hashedContent = hash.digest('hex');
-			const cachedContent = cache.get(hashedContent);
+			const hashedContent = crypto
+				.createHash('sha256')
+				.update(svg)
+				.digest('hex');
+			const key = hashedContent + (options?.ssr ? ':ssr' : ':client');
+
+			const cachedContent = cache.get(key);
 			if (cachedContent) return { code: cachedContent };
 
 			const { data } = optimize(svg, {
@@ -47,7 +50,7 @@ export const svelteSvgImportVite = () => {
 				namespace: 'svg',
 				generate: options.ssr ? 'server' : 'client',
 			});
-			cache.set(hashedContent, js.code);
+			cache.set(key, js.code);
 			return { code: js.code };
 		},
 	};
