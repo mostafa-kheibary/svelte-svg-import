@@ -2,7 +2,7 @@ interface SvgIconProps {
 	strokeWidthScale?: number;
 	color?: string;
 	id?: string;
-	class?: string;
+	class?: string | string[];
 }
 
 declare module '*.svg?svelte' {
