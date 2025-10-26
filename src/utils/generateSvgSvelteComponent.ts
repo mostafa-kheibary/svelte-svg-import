@@ -1,17 +1,17 @@
-import crypto from "node:crypto";
+import crypto from 'node:crypto';
 
 export const generateSvgSvelteComponent = async (svgString: string) => {
-  const svelteSvgString = svgString
-    .replace("<svg ", "<svg class={props.class} ")
-    .replace(/<svg ([^>]*)>/, "<svg $1 {...props}>")
-    .replace(/"#[0-9a-fA-F]{6}"|"#[0-9a-fA-F]{3}"|black|white/g, "{color}")
-    .replace(/stroke-width="([\d.]+)([a-z%]*)"/g, (_match, width, unit) => {
-      return `stroke-width="{${width} * strokeWidthScale}${unit}"`;
-    })
-    .replace(/url\(#.*?\)/g, `url(#id)`)
-    .replace(/id="[^"]+"/g, `id={id}`);
+	const svelteSvgString = svgString
+		.replace('<svg ', '<svg class={props.class} ')
+		.replace(/<svg ([^>]*)>/, '<svg $1 {...props}>')
+		.replace(/"#[0-9a-fA-F]{6}"|"#[0-9a-fA-F]{3}"|black|white/g, '{color}')
+		.replace(/stroke-width="([\d.]+)([a-z%]*)"/g, (_match, width, unit) => {
+			return `stroke-width="{${width} * strokeWidthScale}${unit}"`;
+		})
+		.replace(/url\(#.*?\)/g, `url(#{id})`)
+		.replace(/id="[^"]+"/g, `id={id}`);
 
-  let svelteComponentTemplate = `<script lang="ts">
+	let svelteComponentTemplate = `<script lang="ts">
   import type { SvelteHTMLElements } from 'svelte/elements';
   interface SvgIconProps {
     strokeWidthScale?: number;
@@ -23,5 +23,5 @@ export const generateSvgSvelteComponent = async (svgString: string) => {
   const id = "${crypto.randomUUID()}"; 
 </script>\n`;
 
-  return (svelteComponentTemplate += svelteSvgString);
+	return (svelteComponentTemplate += svelteSvgString);
 };
