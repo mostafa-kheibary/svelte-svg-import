@@ -2,11 +2,14 @@ import fs from 'fs/promises';
 import { compile } from 'svelte/compiler';
 import { optimize } from 'svgo';
 import { generateSvgSvelteComponent } from '../utils/generateSvgSvelteComponent.js';
+import crypto from 'node:crypto';
 
 export interface Config {
 	root: string;
 }
 type ViteTransformOptions = { ssr?: boolean | undefined } | undefined;
+
+const cache = new Map();
 
 export const svelteSvgImportVite = () => {
 	return {
@@ -17,6 +20,12 @@ export const svelteSvgImportVite = () => {
 
 			const cleanedId = id.replace('?svelte', '');
 			const svg = await fs.readFile(cleanedId, { encoding: 'utf8' });
+			const hash = crypto.createHash('sha256');
+			hash.write(svg);
+			const hashedContent = hash.digest('hex');
+			const cachedContent = cache.get(hashedContent);
+			if (cachedContent) return cachedContent;
+
 			const { data } = optimize(svg, {
 				path: cleanedId,
 				plugins: [
@@ -31,13 +40,14 @@ export const svelteSvgImportVite = () => {
 					},
 				],
 			});
-			const component = await generateSvgSvelteComponent(data);
-			const { js } = compile(component, {
+			const content = await generateSvgSvelteComponent(data);
+			const { js } = compile(content, {
 				css: undefined,
 				filename: id,
 				namespace: 'svg',
 				generate: options.ssr ? 'server' : 'client',
 			});
+			cache.set(hashedContent, js);
 			return js;
 		},
 	};
