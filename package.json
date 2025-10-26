@@ -8,7 +8,7 @@
 		"dev": "nodemon --watch \"./src\" --ext ts,json --ignore dist --exec \"npm run build",
 		"build": "npm run clean && tsc && npm run copy:dts",
 		"copy:dts": "copyfiles -u 1 'src/**/*.d.ts' dist",
-		"publish": "npm run build && npm version patch && npm publish"
+		"publish-pkg": "npm run build && npm version patch && npm publish"
 	},
 	"repository": {
 		"type": "git",
