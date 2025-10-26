@@ -31,11 +31,11 @@
 		"@types/prompts": "^2.4.9",
 		"nodemon": "^3.1.10",
 		"prettier": "^3.6.2",
-		"svelte": "^5.42.2",
-		"svgo": "^4.0.0",
 		"ts-node": "^10.9.2"
 	},
 	"dependencies": {
+		"svelte": "^5.42.2",
+		"svgo": "^4.0.0",
 		"copyfiles": "^2.4.1"
 	}
 }
